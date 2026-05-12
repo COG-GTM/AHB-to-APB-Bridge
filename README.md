@@ -1,7 +1,17 @@
 # AHB to APB Bridge
 
+A synthesizable AHB-to-APB bridge interface written in Verilog, with single read/write testbenches driven by an AHB Master and APB Slave.
 
+## Table of Contents
 
+- [About the AMBA Buses](#about-the-amba-buses)
+- [Basic Terminology](#basic-terminology)
+- [AMBA Signals](#amba-signals)
+- [Implementation](#implementation)
+- [Simulation Results](#simulation-results)
+- [Synthesis Results](#synthesis-results)
+- [Further Work](#further-work)
+- [Documentation](#documentation)
 
 ## About the AMBA Buses
 
@@ -65,7 +75,7 @@ transfer (byte, halfword, word). No burst operation is supported
 on the APB.
 
 
-##  AMBA Signals
+## AMBA Signals
 
 ### AMBA AHB Signals
 
@@ -142,9 +152,9 @@ generation of the APB and AHB output signals, and the address decoding logic whi
 is used to generate the APB peripheral select lines.
   
 
-## Notes  
- 
-**The design files are attached in the repository along with the AHB Master and APB Slave which generates the appropriate signals. Only the Bridge is synthesizable and other modules are used as testbenches only to generate the necessary read/write operations. Below are the screenshots from the synthesis and the simulator tool**
+## Notes
+
+**The design files are attached in the repository along with the AHB Master and APB Slave which generate the appropriate signals. Only the Bridge is synthesizable; the other modules are used as testbenches to generate the necessary read/write operations. Below are screenshots from the synthesis and simulator tools.**
 
 # Simulation Results
 
@@ -169,7 +179,6 @@ State Machine Viewer:
 # Documentation
 
 - AMBA Modules | Chapter 4 | [AMBA Modules.pdf](https://github.com/prajwalgekkouga/AHB-to-APB-Bridge/files/9731505/AMBA.Modules.pdf)
-- AMBA Specifications | Chapter 1,2,3 and 5 | [AMBA Specifications.pdf](https://github.com/prajwalgekkouga/AHB-to-APB-Bridge/files/9731507/AMBA.Specifications.pdf)
-
+- AMBA Specifications | Chapters 1–3 and 5 | [AMBA Specifications.pdf](https://github.com/prajwalgekkouga/AHB-to-APB-Bridge/files/9731507/AMBA.Specifications.pdf)
 
 
