@@ -1,3 +1,5 @@
+`timescale 1ns/1ps
+
 // AHB to APG Bridge | Maven Silicon
 //
 //
@@ -22,7 +24,7 @@ reg [2:0] Hsize;
 
 
 
-task single_write();
+task single_write;
  begin
   @(posedge Hclk)
   #2;
@@ -45,7 +47,7 @@ task single_write();
 endtask
 
 
-task single_read();
+task single_read;
  begin
   @(posedge Hclk)
   #2;

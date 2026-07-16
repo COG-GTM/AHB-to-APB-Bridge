@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 
 // AHB to APG Bridge | Maven Silicon
 //
