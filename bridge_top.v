@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 
 // AHB to APG Bridge | Maven Silicon
 //
@@ -9,7 +10,7 @@
 // By-Prajwal Kumar Sahu
 
 
-module Bridge_Top(Hclk,Hresetn,Hwrite,Hreadyin,Hreadyout,Hwdata,Haddr,Htrans,Prdata,Penable,Pwrite,Pselx,Paddr,Pwdata,Hreadyout,Hresp,Hrdata);
+module Bridge_Top(Hclk,Hresetn,Hwrite,Hreadyin,Hreadyout,Hwdata,Haddr,Htrans,Prdata,Penable,Pwrite,Pselx,Paddr,Pwdata,Hresp,Hrdata);
 
 input Hclk,Hresetn,Hwrite,Hreadyin;
 input [31:0] Hwdata,Haddr,Prdata;

@@ -121,10 +121,34 @@ The diagram below shows the interface:
 ## Basic Implementation Tools
 
 - HDL Used : Verilog
-- Simulator Tool Used: ModelSIM
+- Simulator Tool Used: ModelSIM (original) / Icarus Verilog (open-source, see below)
+- Lint Tool Used: Verilator `--lint-only`
 - Synthesis Tool Used: Quartus Prime
 - Family: Cyclone V
 - Device: 5CSXFC6D6F31I7ES
+
+## Open-Source Simulation & Lint
+
+In addition to the original ModelSIM/Quartus flow, the design can be
+regression-verified with a fully open-source toolchain. A self-checking
+testbench (`Bridge_Top_tb.v`) wires the synthesizable `Bridge_Top` to the
+`AHB_Master` stimulus generator and the `APB_Interface` peripheral model,
+drives a single write followed by a single read, and asserts the resulting
+APB transactions (peripheral-select decode, latched address range, write
+data, and read-data passthrough).
+
+Prerequisites: `iverilog`/`vvp` (Icarus Verilog) and `verilator`.
+
+```bash
+make          # lint + simulate (full regression)
+make sim      # compile & run the self-checking testbench
+make lint     # Verilator lint of the synthesizable RTL
+make wave     # open the generated VCD in GTKWave
+make clean    # remove build artifacts
+```
+
+`make sim` fails the build if the testbench reports any mismatch, so it can
+be wired into CI.
 
 ## Design Modules
 
