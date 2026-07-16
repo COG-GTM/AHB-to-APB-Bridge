@@ -1,0 +1,5 @@
+# Simulation / lint build artifacts
+build/
+*.vcd
+*.out
+obj_dir/
