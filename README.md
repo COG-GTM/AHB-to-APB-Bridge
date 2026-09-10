@@ -242,7 +242,7 @@ The `APB_FSM_Controller` is the state machine that turns AHB requests into APB-c
 | State | Encoding | Description |
 | --- | --- | --- |
 | `ST_IDLE` | `3'b000` | Bridge idle; no APB transfer in progress |
-| `ST_WWAIT` | `3'b001` | Write wait; waits one cycle for the AHB data phase before the APB write Setup phase |
+| `ST_WWAIT` | `3'b001` | Write wait; one cycle with `Pselx` clear and `Hreadyout` high so the AHB data phase can complete before the APB write Setup phase |
 | `ST_READ` | `3'b010` | APB read Setup phase (`Pselx` asserted, `Penable` low) |
 | `ST_WRITE` | `3'b011` | APB write Setup phase for a non-pipelined write |
 | `ST_WRITEP` | `3'b100` | APB write Setup phase for a pipelined (back-to-back) write |
@@ -272,10 +272,10 @@ Transitions are driven by `valid`, `Hwrite` and `Hwritereg`:
 
 Output behaviour:
 
-- Combinational logic computes `*_temp` versions of `Paddr`, `Pwdata`, `Pwrite`, `Pselx`, `Penable` and `Hreadyout` from the present state and the pipelined AHB signals; these are registered on the rising edge of `Hclk`, so all APB outputs are synchronous to the AHB clock.
-- `Hreadyout` is driven low during Setup phases (`ST_WWAIT`, `ST_READ`, `ST_WRITE`, `ST_WRITEP`) to stall the AHB master and high during Access phases (`ST_RENABLE`, `ST_WENABLE`, `ST_WENABLEP`) and `ST_IDLE`.
-- `Pselx` is driven from `tempselx` so that exactly one peripheral is selected per transfer.
-- Pipelined writes use `Haddr2` / `Hwdata1` in `ST_WENABLEP` so that a second write can be issued immediately after the first completes.
+- Combinational logic computes `*_temp` versions of `Paddr`, `Pwdata`, `Pwrite`, `Pselx`, `Penable` and `Hreadyout` from the present state and the pipelined AHB signals; these are registered on the rising edge of `Hclk`, so the values computed in one state appear on the outputs during the next state and all APB outputs are synchronous to the AHB clock.
+- `Hreadyout` is low while the outputs show the APB Setup phase (`ST_READ`, `ST_WRITE`, `ST_WRITEP`) to stall the AHB master, and high during `ST_WWAIT` and the Access phases (`ST_RENABLE`, `ST_WENABLE`, `ST_WENABLEP`).
+- `Pselx` is driven from `tempselx` so that exactly one peripheral is selected per transfer; it is cleared while entering `ST_WWAIT` and `ST_IDLE`.
+- For writes, `Paddr` is taken from `Haddr1` (leaving `ST_WWAIT`) or `Haddr2` (leaving `ST_WENABLEP`) while `Pwdata` is taken from the current `Hwdata`, which is the AHB data phase for that address. This lets a second write be issued immediately after the first completes.
 - On reset all APB outputs and `Hreadyout` are cleared to 0.
 
 ## Testbench Models
@@ -294,12 +294,12 @@ Both tasks hard-code `Hsize = 3'b000` (byte) and `Hburst = 3'b000` (SINGLE), mat
 A placeholder APB peripheral used for waveform observation:
 
 - Passes `Pwrite`, `Pselx`, `Penable`, `Paddr` and `Pwdata` straight through to `*out` ports.
-- Returns a random 8-bit value on `Prdata` whenever `~Pwrite && Penable` (the Access phase of a read), and 0 otherwise.
+- Returns a pseudo-random value (`$random % 256`, so the low byte is random and the upper bits are sign-extended) on `Prdata` whenever `~Pwrite && Penable` (the Access phase of a read), and 0 otherwise.
 
 ## Transaction Lifecycle
 
 1. **AHB address phase.** The master drives `Haddr`, `Htrans` and `Hwrite`. The slave interface decodes the address and asserts `valid` and `tempselx`.
-2. **AHB data phase / APB Setup phase.** For a write the master drives `Hwdata`. The FSM leaves `ST_IDLE` for `ST_WWAIT` (write) or `ST_READ` (read), drives `Paddr`, `Pwrite` and `Pselx`, and pulls `Hreadyout` low to insert a wait state on the AHB.
+2. **AHB data phase.** For a read the FSM moves straight to `ST_READ`, which is the APB Setup phase: `Paddr`, `Pwrite` and `Pselx` are driven and `Hreadyout` is pulled low. For a write the FSM first passes through `ST_WWAIT` (`Pselx` clear, `Hreadyout` high) so the master can present `Hwdata`, then enters `ST_WRITE`, the APB Setup phase, and pulls `Hreadyout` low.
 3. **APB Access phase.** The FSM asserts `Penable`. Write data is presented on `Pwdata`, or read data is captured from `Prdata` and forwarded on `Hrdata`. `Hreadyout` returns high, completing the AHB transfer.
 
 ## Known Limitations
