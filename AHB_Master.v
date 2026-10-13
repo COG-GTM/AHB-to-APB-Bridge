@@ -17,52 +17,76 @@ output reg Hwrite,Hreadyin;
 output reg [1:0] Htrans;
 output reg [31:0] Hwdata,Haddr;
 
-reg [2:0] Hburst;
-reg [2:0] Hsize;
+// Result of the last completed transfer, for the testbench to check.
+reg [31:0] read_data;
+reg [1:0]  last_resp;
 
-
-
-task single_write();
+initial
  begin
+  Hwrite=0;
+  Htrans=2'b00;
+  Hreadyin=1;
+  Haddr=0;
+  Hwdata=0;
+  read_data=0;
+  last_resp=2'b00;
+ end
+
+// A transfer phase ends on the first rising edge that samples Hreadyout HIGH.
+task wait_ready;
+ begin
+  @(posedge Hclk);
+  while (!Hreadyout)
+   @(posedge Hclk);
+ end
+endtask
+
+task single_write;
+ begin
+  wait (Hresetn);
   @(posedge Hclk)
   #2;
    begin
     Hwrite=1;
     Htrans=2'b10;
-    Hsize=3'b000;
-    Hburst=3'b000;
     Hreadyin=1;
     Haddr=32'h8000_0001;
    end
-  
-  @(posedge Hclk)
+
+  wait_ready;
   #2;
    begin
     Htrans=2'b00;
     Hwdata=8'hA3;
-   end 
+   end
+
+  wait_ready;
+  last_resp=Hresp;
  end
 endtask
 
 
-task single_read();
+task single_read;
  begin
+  wait (Hresetn);
   @(posedge Hclk)
   #2;
    begin
     Hwrite=0;
     Htrans=2'b10;
-    Hsize=3'b000;
-    Hburst=3'b000;
     Hreadyin=1;
     Haddr=32'h8000_00A2;
    end
-  
-  @(posedge Hclk)
+
+  wait_ready;
   #2;
    begin
     Htrans=2'b00;
-   end 
+   end
+
+  wait_ready;
+  read_data=Hrdata;
+  last_resp=Hresp;
  end
 endtask
 
