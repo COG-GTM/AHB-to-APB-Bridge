@@ -146,6 +146,12 @@ is used to generate the APB peripheral select lines.
  
 **The design files are attached in the repository along with the AHB Master and APB Slave which generates the appropriate signals. Only the Bridge is synthesizable and other modules are used as testbenches only to generate the necessary read/write operations. Below are the screenshots from the synthesis and the simulator tool**
 
+`tb_top.v` is the testbench top: it connects `AHB_Master` -> `Bridge_Top` -> `APB_Interface` (APB slave model), runs one single write and one single read, and checks the APB transfers. It prints `PASS` or exits with `$fatal`. To run it with Icarus Verilog:
+
+```
+iverilog -o /tmp/all.out *.v && vvp /tmp/all.out
+```
+
 # Simulation Results
 
 It consists of a write operation followed by a read operation on the AHB Bus which is successfully mapped to the APB bus according to the interfacing.
