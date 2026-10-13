@@ -53,7 +53,7 @@ always @(PRESENT_STATE,valid,Hwrite,Hwritereg)
  	ST_IDLE:begin
 		 if (~valid)
 		  NEXT_STATE=ST_IDLE;
-		 else if (valid && Hwrite)
+		 else if (Hwrite)
 		  NEXT_STATE=ST_WWAIT;
 		 else 
 		  NEXT_STATE=ST_READ;
@@ -84,7 +84,7 @@ always @(PRESENT_STATE,valid,Hwrite,Hwritereg)
 	ST_RENABLE:begin
 		     if (~valid)
 		      NEXT_STATE=ST_IDLE;
-		     else if (valid && Hwrite)
+		     else if (Hwrite)
 		      NEXT_STATE=ST_WWAIT;
 		     else
 		      NEXT_STATE=ST_READ;
@@ -93,7 +93,7 @@ always @(PRESENT_STATE,valid,Hwrite,Hwritereg)
 	ST_WENABLE:begin
 		     if (~valid)
 		      NEXT_STATE=ST_IDLE;
-		     else if (valid && Hwrite)
+		     else if (Hwrite)
 		      NEXT_STATE=ST_WWAIT;
 		     else
 		      NEXT_STATE=ST_READ;
@@ -102,7 +102,7 @@ always @(PRESENT_STATE,valid,Hwrite,Hwritereg)
 	ST_WENABLEP:begin
 		      if (~valid && Hwritereg)
 		       NEXT_STATE=ST_WRITE;
-		      else if (valid && Hwritereg)
+		      else if (Hwritereg)
 		       NEXT_STATE=ST_WRITEP;
 		      else
 		       NEXT_STATE=ST_READ;
@@ -135,61 +135,31 @@ always @(*)
 				Hreadyout_temp=0;
 			   end
 			  
-			  else if (valid && Hwrite)
-			   begin:IDLE_TO_WWAIT
-			        Pselx_temp=0;
-				Penable_temp=0;
-				Hreadyout_temp=1;			   
-			   end
-			   
 			  else
-                            begin:IDLE_TO_IDLE
+			   begin:IDLE_TO_WWAIT_OR_IDLE
 			        Pselx_temp=0;
 				Penable_temp=0;
-				Hreadyout_temp=1;	
+				Hreadyout_temp=1;
 			   end
 		     end    
 
-	ST_WWAIT:begin
-	          if (~valid) 
-			   begin:WAIT_TO_WRITE
+	ST_WWAIT:begin:WWAIT_TO_WRITE_OR_WRITEP
 			    Paddr_temp=Haddr1;
 				Pwrite_temp=1;
 				Pselx_temp=tempselx;
 				Penable_temp=0;
 				Pwdata_temp=Hwdata;
 				Hreadyout_temp=0;
-			   end
-			  
-			  else 
-			   begin:WAIT_TO_WRITEP
-			    Paddr_temp=Haddr1;
-				Pwrite_temp=1;
-				Pselx_temp=tempselx;
-				Pwdata_temp=Hwdata;
-				Penable_temp=0;
-				Hreadyout_temp=0;		   
-			   end
-			   
-		     end  
+		     end
 
 	ST_READ: begin:READ_TO_RENABLE
 			  Penable_temp=1;
 			  Hreadyout_temp=1;
 		     end
 
-	ST_WRITE:begin
-              if (~valid) 
-			   begin:WRITE_TO_WENABLE
+	ST_WRITE:begin:WRITE_TO_WENABLE_OR_WENABLEP
 				Penable_temp=1;
 				Hreadyout_temp=1;
-			   end
-			  
-			  else 
-			   begin:WRITE_TO_WENABLEP ///DOUBT
-				Penable_temp=1;
-				Hreadyout_temp=1;		   
-			   end
 		     end
 
 	ST_WRITEP:begin:WRITEP_TO_WENABLEP
@@ -207,61 +177,28 @@ always @(*)
 					Hreadyout_temp=0;
 				 end
 			  
-			  else if (valid && Hwrite)
-			    begin:RENABLE_TO_WWAIT
-			     Pselx_temp=0;
-				 Penable_temp=0;
-				 Hreadyout_temp=1;			   
-			    end
-			   
 			  else
-                begin:RENABLE_TO_IDLE
+			    begin:RENABLE_TO_WWAIT_OR_IDLE
 			     Pselx_temp=0;
 				 Penable_temp=0;
-				 Hreadyout_temp=1;	
+				 Hreadyout_temp=1;
 			    end
 
 		       end
 
-	ST_WENABLEP:begin
-                 if (~valid && Hwritereg) 
-			      begin:WENABLEP_TO_WRITEP
+	ST_WENABLEP:begin:WENABLEP_TO_WRITE_OR_WRITEP_OR_READ
 			       Paddr_temp=Haddr2;
 				   Pwrite_temp=Hwrite;
 				   Pselx_temp=tempselx;
 				   Penable_temp=0;
 				   Pwdata_temp=Hwdata;
 				   Hreadyout_temp=0;
-				  end
-
-			  
-			    else 
-			     begin:WENABLEP_TO_WRITE_OR_READ /////DOUBT
-			      Paddr_temp=Haddr2;
-				  Pwrite_temp=Hwrite;
-				  Pselx_temp=tempselx;
-				  Pwdata_temp=Hwdata;
-				  Penable_temp=0;
-				  Hreadyout_temp=0;		   
-			     end
 		        end
 
-	ST_WENABLE :begin
-	             if (~valid && Hwritereg) 
-			      begin:WENABLE_TO_IDLE
+	ST_WENABLE :begin:WENABLE_TO_IDLE_OR_WWAIT_OR_READ
 				   Pselx_temp=0;
 				   Penable_temp=0;
 				   Hreadyout_temp=0;
-				  end
-
-			  
-			    else 
-			     begin:WENABLE_TO_WAIT_OR_READ /////DOUBT
-				  Pselx_temp=0;
-				  Penable_temp=0;
-				  Hreadyout_temp=0;		   
-			     end
-
 		        end
 
  endcase
