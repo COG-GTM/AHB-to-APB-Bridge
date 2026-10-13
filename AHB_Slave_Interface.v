@@ -11,13 +11,13 @@
 
 
 module AHB_slave_interface(Hclk,Hresetn,Hwrite,Hreadyin,Htrans,Haddr,Hwdata,
-			   Prdata,valid,Haddr1,Haddr2,Hwdata1,Hwdata2,Hrdata,Hwritereg,tempselx,Hresp);
+			   Prdata,valid,Haddr1,Haddr2,Hrdata,Hwritereg,tempselx,Hresp);
 input Hclk,Hresetn;
 input Hwrite,Hreadyin;
 input [1:0] Htrans;
 input [31:0] Haddr,Hwdata,Prdata;
 output reg valid;
-output reg [31:0] Haddr1,Haddr2,Hwdata1,Hwdata2;
+output reg [31:0] Haddr1,Haddr2;
 output [31:0] Hrdata; 
 output reg Hwritereg;
 output reg [2:0] tempselx;
@@ -25,7 +25,7 @@ output  [1:0] Hresp;
 
 
 
-/// Implementing Pipeline Logic for Address,Data and Control Signal
+/// Implementing Pipeline Logic for Address and Control Signal
 
 	always @(posedge Hclk)
 		begin
@@ -43,22 +43,6 @@ output  [1:0] Hresp;
 		
 		end
 
-	always @(posedge Hclk)
-		begin
-		
-			if (~Hresetn)
-				begin
-					Hwdata1<=0;
-					Hwdata2<=0;
-				end
-			else
-				begin
-					Hwdata1<=Hwdata;
-					Hwdata2<=Hwdata1;
-				end
-		
-		end
-		
 	always @(posedge Hclk)
 		begin	
 			if (~Hresetn)

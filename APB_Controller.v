@@ -8,11 +8,11 @@
 //
 // By-Prajwal Kumar Sahu
 
-module APB_FSM_Controller( Hclk,Hresetn,valid,Haddr1,Haddr2,Hwdata1,Hwdata2,Prdata,Hwrite,Haddr,Hwdata,Hwritereg,tempselx, 
+module APB_FSM_Controller( Hclk,Hresetn,valid,Haddr1,Haddr2,Hwrite,Haddr,Hwdata,Hwritereg,tempselx, 
 			   Pwrite,Penable,Pselx,Paddr,Pwdata,Hreadyout);
 
 input Hclk,Hresetn,valid,Hwrite,Hwritereg;
-input [31:0] Hwdata,Haddr,Haddr1,Haddr2,Hwdata1,Hwdata2,Prdata;
+input [31:0] Hwdata,Haddr,Haddr1,Haddr2;
 input [2:0] tempselx;
 output reg Pwrite,Penable;
 output reg Hreadyout;  
