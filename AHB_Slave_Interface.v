@@ -11,7 +11,7 @@
 
 
 module AHB_slave_interface(Hclk,Hresetn,Hwrite,Hreadyin,Htrans,Haddr,Hwdata,
-			   Prdata,valid,Haddr1,Haddr2,Hwdata1,Hwdata2,Hrdata,Hwritereg,tempselx,Hresp);
+			   Prdata,valid,Haddr1,Haddr2,Hwdata1,Hwdata2,Hrdata,Hwritereg,tempselx,tempselx1,tempselx2,Hresp);
 input Hclk,Hresetn;
 input Hwrite,Hreadyin;
 input [1:0] Htrans;
@@ -21,6 +21,7 @@ output reg [31:0] Haddr1,Haddr2,Hwdata1,Hwdata2;
 output [31:0] Hrdata; 
 output reg Hwritereg;
 output reg [2:0] tempselx;
+output reg [2:0] tempselx1,tempselx2;
 output  [1:0] Hresp;
 
 
@@ -34,11 +35,15 @@ output  [1:0] Hresp;
 				begin
 					Haddr1<=0;
 					Haddr2<=0;
+					tempselx1<=0;
+					tempselx2<=0;
 				end
 			else
 				begin
 					Haddr1<=Haddr;
 					Haddr2<=Haddr1;
+					tempselx1<=tempselx;
+					tempselx2<=tempselx1;
 				end
 		
 		end
