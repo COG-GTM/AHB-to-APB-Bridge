@@ -8,12 +8,12 @@
 //
 // By-Prajwal Kumar Sahu
 
-module APB_FSM_Controller( Hclk,Hresetn,valid,Haddr1,Haddr2,Hwdata1,Hwdata2,Prdata,Hwrite,Haddr,Hwdata,Hwritereg,tempselx, 
+module APB_FSM_Controller( Hclk,Hresetn,valid,Haddr1,Haddr2,Hwdata1,Hwdata2,Prdata,Hwrite,Haddr,Hwdata,Hwritereg,tempselx,tempselx1,tempselx2, 
 			   Pwrite,Penable,Pselx,Paddr,Pwdata,Hreadyout);
 
 input Hclk,Hresetn,valid,Hwrite,Hwritereg;
 input [31:0] Hwdata,Haddr,Haddr1,Haddr2,Hwdata1,Hwdata2,Prdata;
-input [2:0] tempselx;
+input [2:0] tempselx,tempselx1,tempselx2;
 output reg Pwrite,Penable;
 output reg Hreadyout;  
 output reg [2:0] Pselx;
@@ -155,7 +155,7 @@ always @(*)
 			   begin:WAIT_TO_WRITE
 			    Paddr_temp=Haddr1;
 				Pwrite_temp=1;
-				Pselx_temp=tempselx;
+				Pselx_temp=tempselx1;
 				Penable_temp=0;
 				Pwdata_temp=Hwdata;
 				Hreadyout_temp=0;
@@ -165,7 +165,7 @@ always @(*)
 			   begin:WAIT_TO_WRITEP
 			    Paddr_temp=Haddr1;
 				Pwrite_temp=1;
-				Pselx_temp=tempselx;
+				Pselx_temp=tempselx1;
 				Pwdata_temp=Hwdata;
 				Penable_temp=0;
 				Hreadyout_temp=0;		   
@@ -228,7 +228,7 @@ always @(*)
 			      begin:WENABLEP_TO_WRITEP
 			       Paddr_temp=Haddr2;
 				   Pwrite_temp=Hwrite;
-				   Pselx_temp=tempselx;
+				   Pselx_temp=tempselx2;
 				   Penable_temp=0;
 				   Pwdata_temp=Hwdata;
 				   Hreadyout_temp=0;
@@ -239,7 +239,7 @@ always @(*)
 			     begin:WENABLEP_TO_WRITE_OR_READ /////DOUBT
 			      Paddr_temp=Haddr2;
 				  Pwrite_temp=Hwrite;
-				  Pselx_temp=tempselx;
+				  Pselx_temp=tempselx2;
 				  Pwdata_temp=Hwdata;
 				  Penable_temp=0;
 				  Hreadyout_temp=0;		   
