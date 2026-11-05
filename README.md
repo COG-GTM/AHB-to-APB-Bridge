@@ -146,6 +146,10 @@ is used to generate the APB peripheral select lines.
  
 **The design files are attached in the repository along with the AHB Master and APB Slave which generates the appropriate signals. Only the Bridge is synthesizable and other modules are used as testbenches only to generate the necessary read/write operations. Below are the screenshots from the synthesis and the simulator tool**
 
+**Unmapped addresses:** a NONSEQ/SEQ transfer outside `0x8000_0000`-`0x8BFF_FFFF` starts no APB transfer and gets the two-cycle AHB ERROR response (`HRESP=01` with `HREADYOUT=0`, then `HRESP=01` with `HREADYOUT=1`). `HRDATA` is driven from `PRDATA` only during the APB read access phase and is 0 otherwise.
+
+Run the self-checking testbench with `iverilog -o /tmp/all.out *.v && vvp /tmp/all.out` (prints `PASS: Bridge_Error_Response_tb`; exits non-zero on failure).
+
 # Simulation Results
 
 It consists of a write operation followed by a read operation on the AHB Bus which is successfully mapped to the APB bus according to the interfacing.
